@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  LOAN_OFFICER
+}
+
+enum LoanType {
+  CONVENTIONAL
+  FHA
+  VA
+  JUMBO
+  USDA
+}
+
+enum LoanTerm {
+  FIFTEEN_YEAR
+  THIRTY_YEAR
+}
+
+enum LoanStage {
+  LEAD
+  APPLICATION
+  PROCESSING
+  UNDERWRITING
+  APPROVED
+  CLOSED
+}
+
+enum ActivityAction {
+  STAGE_CHANGE
+  NOTE_ADDED
+  LOAN_CREATED
+  LOAN_UPDATED
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String   @unique
+  fullName  String
+  role      Role
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loans      Loan[]
+  activities LoanActivity[]
+}
+
+model Loan {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  borrowerFirstName String
+  borrowerLastName  String
+  borrowerEmail     String
+  borrowerPhone     String
+  loanAmount        Decimal
+  loanType          LoanType
+  loanTerm          LoanTerm
+  propertyAddress   String
+  propertyCity      String
+  propertyState     String
+  propertyZip       String
+  stage             LoanStage @default(LEAD)
+  stageEnteredAt    DateTime  @default(now())
+  loanOfficerId     String    @db.Uuid
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  loanOfficer User           @relation(fields: [loanOfficerId], references: [id])
+  activities  LoanActivity[]
+}
+
+model LoanActivity {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  loanId      String         @db.Uuid
+  userId      String         @db.Uuid
+  action      ActivityAction
+  fromStage   LoanStage?
+  toStage     LoanStage?
+  description String
+  createdAt   DateTime       @default(now())
+
+  loan Loan @relation(fields: [loanId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
