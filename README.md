@@ -47,7 +47,7 @@ A real-time loan pipeline dashboard for mortgage companies. Loan officers can tr
 3. Create a `.env.local` file with your Supabase credentials:
    ```
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_publishable_key
    DATABASE_URL=your_pooled_connection_string
    DIRECT_URL=your_direct_connection_string
    ```
